@@ -7,29 +7,17 @@ using System;
 
 public class Spawner : MonoBehaviour {
 
-    public float spawnTimer = 3, seconds, minXPosition = -8f, maxXposition = 8f;//, timer=0;
-    public GameObject spawningObject, spawnedObject;
+    public float spawnTimer = 3, seconds, minXPosition = -8f, maxXposition = 8f;
+    public GameObject spawningObject, spawnedObject, levelSettings;
     public Vector3 pos;
-   // public Vector3 platformSpeed;
     public Quaternion rot;
     SpriteRenderer sr;
     public Sprite[] spr;
-    int rnd;//, lvl = 0;
-  //  public int lvlTime=10;
-   // public float[] platformSpeedXValues, platformSpeedYValues;
-   // public int[] lvlTimeValues;
+    int rnd;
 
-    private void Start()
+    void Update ()
     {
-     //   platformSpeed.x = 0;
-      //  platformSpeed.y = 0;
-    }
-
-    void Update () {
-
-       // LevelTiming();
-        SpawnTiming();
-                     
+        SpawnTiming();          
 	}
     void SpriteChange()
     {
@@ -38,6 +26,7 @@ public class Spawner : MonoBehaviour {
     void Spawn()
     {
         spawnedObject = Instantiate(spawningObject, pos, rot);
+        spawnedObject.GetComponent<Positioning>().can = levelSettings;
         switch (rnd)
         {
             case 0:
@@ -61,17 +50,4 @@ public class Spawner : MonoBehaviour {
             SpriteChange();
         }
     }
-   /* void LevelTiming()
-    {
-        timer += Time.deltaTime;
-
-        if (timer > lvlTime)
-        {
-            timer = 0;
-            lvl++;
-            platformSpeed.x = platformSpeedXValues[lvl];
-            platformSpeed.y = platformSpeedYValues[lvl];
-            lvlTime = lvlTimeValues[lvl];
-        }
-    }*/
 }
