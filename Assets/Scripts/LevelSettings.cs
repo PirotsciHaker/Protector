@@ -7,14 +7,14 @@ public class LevelSettings : MonoBehaviour {
 
     float timer=0;
     public Vector3 platformSpeed;
-    int lvl = 0, lvlTime;
+    int lvl = 0, lvlTime, maxLvl = 5;
     public float[] platformSpeedXValues, platformSpeedYValues;
     public int[] lvlTimeValues;
     public Transform platformPos;
     public GameObject platform;
     public Camera cam;
-    public Vector2 camDimensionsScreen, camDimensionsWorld;
-    public float topLimit;
+    public Vector2 camDimensionsScreen, camDimensionsWorld, lvl2SpeedChange, lvl4SpeedChange;
+    public float topLimit, minXSpeed, maxXSpeed, minYSpeed, maxYSpeed, minTime, maxTime;
 
 
 
@@ -28,7 +28,10 @@ public class LevelSettings : MonoBehaviour {
 
 	void Update ()
     {
-        LevelTiming();
+        if (lvl < maxLvl)
+        {
+            LevelTiming();
+        }
         MovementSettings();
         CamDimensions();
     }
@@ -41,7 +44,10 @@ public class LevelSettings : MonoBehaviour {
         {
             timer = 0;
             lvl++;
-            lvlTime = lvlTimeValues[lvl];
+            if (lvl < maxLvl)
+            {
+                lvlTime = lvlTimeValues[lvl];
+            }
             switch (lvl)
             {
                 case 1:
@@ -51,10 +57,24 @@ public class LevelSettings : MonoBehaviour {
                     break;
                 case 2:
                     {
-                        StartCoroutine(SpeedChange(.05f, 5f, .3f));
+                        StartCoroutine(SpeedChangeX(lvl2SpeedChange.x, lvl2SpeedChange.y, platformSpeedXValues[lvl]));
                     }
                     break;
-                    //TO DO
+                case 3:
+                    {
+                        platformSpeed.y = platformSpeedYValues[lvl];
+                    }
+                    break;
+                case 4:
+                    {
+                        StartCoroutine(SpeedChangeY(lvl4SpeedChange.x, lvl4SpeedChange.y, platformSpeedYValues[lvl]));
+                    }
+                    break;
+                case 5:
+                    {
+                        StartCoroutine(RandomSpeed(minXSpeed, maxXSpeed, minYSpeed,maxYSpeed,minTime,maxTime));
+                    }
+                    break;
             }
         }
     }
@@ -88,18 +108,52 @@ public class LevelSettings : MonoBehaviour {
         camDimensionsScreen = cam.ScreenToWorldPoint(camDimensionsWorld);
     }
 
-    IEnumerator SpeedChange(float speedChange, float time, float maxSpeed)
+    IEnumerator SpeedChangeX(float speedChange, float time, float maxSpeed)
     {
-        while (Mathf.Abs(platformSpeed.x)<maxSpeed)
-        {
+        while (Mathf.Abs(platformSpeed.x) < maxSpeed)
+        {  
             if (platformSpeed.x < 0)
             {
                 platformSpeed.x -= speedChange;
             }
             else platformSpeed.x += speedChange;
-            
+
+            if (Mathf.Abs(platformSpeed.x) > maxSpeed)
+            {
+                platformSpeed.x = maxSpeed;
+            }
+
             yield return new WaitForSeconds(time);
         }
 
+    }
+
+    IEnumerator SpeedChangeY(float speedChange, float time, float maxSpeed)
+    {
+        while (Mathf.Abs(platformSpeed.y) < maxSpeed)
+        {
+            if (platformSpeed.y < 0)
+            {
+                platformSpeed.y -= speedChange;
+            }
+            else platformSpeed.y += speedChange;
+
+            if (Mathf.Abs(platformSpeed.y) > maxSpeed)
+            {
+                platformSpeed.y = maxSpeed;
+            }
+
+            yield return new WaitForSeconds(time);
+        }
+
+    }
+    IEnumerator RandomSpeed(float minXSpeed, float maxXSpeed, float minYSpeed, float maxYSpeed, float minTime, float maxTime)
+    {
+        while (true)
+        {
+            platformSpeed.x = Random.Range(minXSpeed, maxYSpeed);
+            platformSpeed.y = Random.Range(minYSpeed,maxYSpeed);
+            yield return new WaitForSeconds(Random.Range(minTime, maxTime));
+        }
     }
 }
